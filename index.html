@@ -2401,6 +2401,162 @@ body{
   function init(){applySettings();addNav();addMics();if(localStorage.getItem('mindcareProfile'))showApp();else{document.getElementById('loginPage').style.display='flex';document.getElementById('app').style.display='none'}updateDashboard();loadJournal()}
   document.addEventListener('DOMContentLoaded',init);
 })();
+
+/* ---------- MindCare multilingual interface ---------- */
+(function(){
+  const MC_LANGS = {
+    English: 'en', Hindi: 'hi', Assamese: 'as', Bengali: 'bn', Manipuri: 'mni'
+  };
+  const MC_T = {"hi": {"MindCare": "MindCare", "A calmer day starts here": "एक शांत दिन की शुरुआत यहाँ से होती है", "Cognitive support, memory activities, family connection and everyday care — designed with simplicity in mind.": "संज्ञानात्मक सहायता, स्मृति गतिविधियाँ, परिवार से जुड़ाव और रोज़मर्रा की देखभाल — सरलता को ध्यान में रखकर बनाया गया।", "Create Profile": "प्रोफ़ाइल बनाएँ", "Log In": "लॉग इन करें", "Full name": "पूरा नाम", "Phone number": "फ़ोन नंबर", "Preferred language": "पसंदीदा भाषा", "Create Profile & Continue": "प्रोफ़ाइल बनाएँ और जारी रखें", "Use the same phone number you registered with.": "वही फ़ोन नंबर इस्तेमाल करें जिससे आपने पंजीकरण किया था।", "Dashboard": "डैशबोर्ड", "Memory Games": "स्मृति खेल", "Family Circle": "परिवार मंडल", "My Journal": "मेरी डायरी", "Nearby Friends": "आस-पास के मित्र", "AI Companion": "AI सहायक", "My Profile": "मेरी प्रोफ़ाइल", "Emergency Help": "आपातकालीन सहायता", "Patient": "उपयोगकर्ता", "Good morning,": "सुप्रभात,", "Here is everything you need for a calm and healthy day.": "शांत और स्वस्थ दिन के लिए आपकी ज़रूरी जानकारी यहाँ है।", "Your care for today": "आज की देखभाल", "Simple reminders to help you stay on track.": "आपको दिनचर्या पर बने रहने में मदद करने वाले सरल अनुस्मारक।", "Morning medication": "सुबह की दवा", "Take after breakfast": "नाश्ते के बाद लें", "Drink water": "पानी पिएँ", "Have your morning glass": "सुबह एक गिलास पानी पिएँ", "Memory activity": "स्मृति गतिविधि", "Try a 10-minute brain exercise": "10 मिनट का मस्तिष्क अभ्यास करें", "Evening walk": "शाम की सैर", "A gentle 15-minute walk": "15 मिनट की हल्की सैर", "Your caregiver": "आपकी देखभाल करने वाला", "Someone you can contact whenever you need help.": "जब भी मदद चाहिए, आप इनसे संपर्क कर सकते हैं।", "Available now": "अभी उपलब्ध", "Contact Raj": "राज से संपर्क करें", "Quick activities": "त्वरित गतिविधियाँ", "Memory Exercise": "स्मृति अभ्यास", "Take a few minutes for a gentle cognitive activity.": "हल्की संज्ञानात्मक गतिविधि के लिए कुछ मिनट निकालें।", "Start activity": "गतिविधि शुरू करें", "Hear instructions": "निर्देश सुनें", "Stay connected": "जुड़े रहें", "Stay connected with people who care about you.": "उन लोगों से जुड़े रहें जो आपकी परवाह करते हैं।", "Open Family Circle": "परिवार मंडल खोलें", "Cognitive activities": "संज्ञानात्मक गतिविधियाँ", "Gentle games designed to keep the mind active and engaged.": "मन को सक्रिय और व्यस्त रखने के लिए बनाई गई सरल खेल गतिविधियाँ।", "Picture Pairs": "चित्र जोड़े", "Find matching pairs and exercise your memory.": "मिलते-जुलते जोड़े खोजें और अपनी स्मृति का अभ्यास करें।", "Play Game": "खेलें", "Easy Sudoku": "आसान सुडोकू", "A simple number puzzle for logical thinking.": "तार्किक सोच के लिए सरल संख्या पहेली।", "Block Lines": "ब्लॉक लाइन्स", "Place blocks and complete lines to make them disappear.": "ब्लॉक्स लगाकर पंक्तियाँ पूरी करें और उन्हें हटाएँ।", "Remember the Sequence": "क्रम याद रखें", "Watch the pattern and repeat it from memory.": "पैटर्न देखें और उसे स्मृति से दोहराएँ।", "Word Match": "शब्द मिलान", "Match simple words with their related meaning.": "सरल शब्दों को उनके संबंधित अर्थ से मिलाएँ।", "Music Memory": "संगीत स्मृति", "Listen to familiar sounds and remember their order.": "परिचित ध्वनियाँ सुनें और उनका क्रम याद रखें।", "Hear About It": "इसके बारे में सुनें", "Choose a game above": "ऊपर से एक खेल चुनें", "Your selected activity will appear here.": "आपकी चुनी हुई गतिविधि यहाँ दिखाई देगी।", "Keep in touch with the people who care about you.": "उन लोगों के संपर्क में रहें जो आपकी परवाह करते हैं।", "Your family": "आपका परिवार", "Message": "संदेश", "Family messages": "परिवार के संदेश", "Your memories": "आपकी यादें", "Write about your day, memories, family or anything you want to remember.": "अपने दिन, यादों, परिवार या ऐसी किसी भी बात के बारे में लिखें जिसे आप याद रखना चाहते हैं।", "Today's note": "आज की टिप्पणी", "Save Note": "नोट सहेजें", "Hear My Note": "मेरा नोट सुनें", "Community": "समुदाय", "Connect with nearby people using the MindCare community.": "MindCare समुदाय के माध्यम से आस-पास के लोगों से जुड़ें।", "People nearby": "आस-पास के लोग", "Only people who choose to participate in the community are shown.": "सिर्फ वे लोग दिखाई देते हैं जो समुदाय में शामिल होना चुनते हैं।", "Connect": "जुड़ें", "Find Nearby Devices": "आस-पास के डिवाइस खोजें", "Open Group Chat": "ग्रुप चैट खोलें", "Nearby Bluetooth discovery requires browser/device permission.": "आस-पास के Bluetooth डिवाइस खोजने के लिए ब्राउज़र/डिवाइस की अनुमति आवश्यक है।", "In the full mobile application this can connect to the real nearby-community system.": "पूरे मोबाइल ऐप में यह वास्तविक आस-पास के समुदाय सिस्टम से जुड़ सकता है।", "Community chat": "समुदाय चैट", "Nearby Friends Group": "आस-पास के मित्रों का समूह", "A friendly space for people using MindCare nearby.": "पास में MindCare इस्तेमाल करने वाले लोगों के लिए एक मित्रवत जगह।", "Send": "भेजें", "Friendly support": "मित्रवत सहायता", "A simple conversational companion for everyday support.": "रोज़मर्रा की सहायता के लिए एक सरल बातचीत साथी।", "Hello! I'm here with you. How are you feeling today?": "नमस्ते! मैं आपके साथ हूँ। आज आप कैसा महसूस कर रहे हैं?", "Your account": "आपका खाता", "Your basic MindCare profile information.": "आपकी मूल MindCare प्रोफ़ाइल जानकारी।", "MindCare member": "MindCare सदस्य", "Full Name": "पूरा नाम", "Phone Number": "फ़ोन नंबर", "Preferred Language": "पसंदीदा भाषा", "Log Out": "लॉग आउट", "Immediate assistance": "तत्काल सहायता", "If you are in immediate danger or need urgent assistance, contact emergency services or your caregiver.": "यदि आप तत्काल खतरे में हैं या तुरंत सहायता चाहिए, तो आपातकालीन सेवाओं या अपने देखभालकर्ता से संपर्क करें।", "Emergency services": "आपातकालीन सेवाएँ", "India's emergency response number.": "भारत का आपातकालीन सहायता नंबर।", "Contact Caregiver": "देखभालकर्ता से संपर्क करें", "Your emergency contact": "आपका आपातकालीन संपर्क", "Primary Caregiver": "मुख्य देखभालकर्ता", "Call Raj": "राज को कॉल करें", "Write something about your day...": "अपने दिन के बारे में कुछ लिखें...", "Write a message...": "संदेश लिखें..."}, "bn": {"A calmer day starts here": "একটি শান্ত দিনের শুরু এখান থেকে", "Cognitive support, memory activities, family connection and everyday care — designed with simplicity in mind.": "জ্ঞানীয় সহায়তা, স্মৃতির কার্যক্রম, পরিবারের সঙ্গে যোগাযোগ এবং দৈনন্দিন যত্ন — সরলতার কথা মাথায় রেখে তৈরি।", "Create Profile": "প্রোফাইল তৈরি করুন", "Log In": "লগ ইন করুন", "Full name": "পুরো নাম", "Phone number": "ফোন নম্বর", "Preferred language": "পছন্দের ভাষা", "Create Profile & Continue": "প্রোফাইল তৈরি করে এগিয়ে যান", "Use the same phone number you registered with.": "নিবন্ধনের সময় ব্যবহৃত একই ফোন নম্বর ব্যবহার করুন।", "Dashboard": "ড্যাশবোর্ড", "Memory Games": "স্মৃতির খেলা", "Family Circle": "পরিবারের পরিধি", "My Journal": "আমার ডায়েরি", "Nearby Friends": "কাছের বন্ধুরা", "AI Companion": "AI সহায়ক", "My Profile": "আমার প্রোফাইল", "Emergency Help": "জরুরি সহায়তা", "Good morning,": "সুপ্রভাত,", "Here is everything you need for a calm and healthy day.": "শান্ত ও সুস্থ দিনের জন্য আপনার প্রয়োজনীয় সবকিছু এখানে আছে।", "Your care for today": "আজকের যত্ন", "Simple reminders to help you stay on track.": "আপনাকে নিয়ম মেনে চলতে সাহায্য করার জন্য সহজ অনুস্মারক।", "Morning medication": "সকালের ওষুধ", "Take after breakfast": "জলখাবারের পরে নিন", "Drink water": "পানি পান করুন", "Have your morning glass": "সকালে এক গ্লাস পানি পান করুন", "Memory activity": "স্মৃতির কার্যক্রম", "Try a 10-minute brain exercise": "১০ মিনিটের মস্তিষ্কের ব্যায়াম করুন", "Evening walk": "সন্ধ্যার হাঁটা", "A gentle 15-minute walk": "১৫ মিনিটের হালকা হাঁটা", "Available now": "এখন উপলব্ধ", "Contact Raj": "রাজের সঙ্গে যোগাযোগ করুন", "Quick activities": "দ্রুত কার্যক্রম", "Memory Exercise": "স্মৃতির ব্যায়াম", "Take a few minutes for a gentle cognitive activity.": "হালকা জ্ঞানীয় কার্যক্রমের জন্য কয়েক মিনিট সময় নিন।", "Start activity": "কার্যক্রম শুরু করুন", "Hear instructions": "নির্দেশ শুনুন", "Stay connected": "যোগাযোগ রাখুন", "Stay connected with people who care about you.": "যারা আপনার যত্ন নেন তাদের সঙ্গে যোগাযোগ রাখুন।", "Open Family Circle": "পরিবারের পরিধি খুলুন", "Cognitive activities": "জ্ঞানীয় কার্যক্রম", "Gentle games designed to keep the mind active and engaged.": "মনকে সক্রিয় ও ব্যস্ত রাখার জন্য তৈরি সহজ খেলা।", "Picture Pairs": "ছবির জোড়া", "Find matching pairs and exercise your memory.": "মিল থাকা জোড়া খুঁজে আপনার স্মৃতির অনুশীলন করুন।", "Play Game": "খেলুন", "Easy Sudoku": "সহজ সুডোকু", "A simple number puzzle for logical thinking.": "যুক্তিবোধের জন্য একটি সহজ সংখ্যার ধাঁধা।", "Block Lines": "ব্লক লাইন", "Place blocks and complete lines to make them disappear.": "ব্লক বসিয়ে লাইন সম্পূর্ণ করুন এবং সেগুলি সরিয়ে দিন।", "Remember the Sequence": "ক্রম মনে রাখুন", "Watch the pattern and repeat it from memory.": "প্যাটার্ন দেখুন এবং মনে রেখে পুনরাবৃত্তি করুন।", "Word Match": "শব্দ মিল", "Match simple words with their related meaning.": "সহজ শব্দকে তাদের সম্পর্কিত অর্থের সঙ্গে মিলিয়ে নিন।", "Music Memory": "সঙ্গীত স্মৃতি", "Listen to familiar sounds and remember their order.": "পরিচিত শব্দ শুনুন এবং তাদের ক্রম মনে রাখুন।", "Hear About It": "এটি সম্পর্কে শুনুন", "Choose a game above": "উপরের একটি খেলা বেছে নিন", "Your selected activity will appear here.": "আপনার নির্বাচিত কার্যক্রম এখানে দেখা যাবে।", "Your family": "আপনার পরিবার", "Message": "বার্তা", "Family messages": "পরিবারের বার্তা", "Your memories": "আপনার স্মৃতি", "Write about your day, memories, family or anything you want to remember.": "আপনার দিন, স্মৃতি, পরিবার বা যে কোনো মনে রাখার মতো বিষয় লিখুন।", "Today's note": "আজকের নোট", "Save Note": "নোট সংরক্ষণ করুন", "Hear My Note": "আমার নোট শুনুন", "Community": "সম্প্রদায়", "Connect with nearby people using the MindCare community.": "MindCare সম্প্রদায়ের মাধ্যমে কাছের মানুষের সঙ্গে যোগাযোগ করুন।", "People nearby": "কাছের মানুষ", "Connect": "যোগাযোগ করুন", "Find Nearby Devices": "কাছের ডিভাইস খুঁজুন", "Open Group Chat": "গ্রুপ চ্যাট খুলুন", "Community chat": "সম্প্রদায় চ্যাট", "Nearby Friends Group": "কাছের বন্ধুদের গ্রুপ", "A friendly space for people using MindCare nearby.": "কাছাকাছি MindCare ব্যবহারকারীদের জন্য একটি বন্ধুত্বপূর্ণ জায়গা।", "Send": "পাঠান", "Friendly support": "বন্ধুত্বপূর্ণ সহায়তা", "A simple conversational companion for everyday support.": "দৈনন্দিন সহায়তার জন্য একটি সহজ কথোপকথনের সঙ্গী।", "Hello! I'm here with you. How are you feeling today?": "নমস্কার! আমি আপনার সঙ্গে আছি। আজ আপনি কেমন অনুভব করছেন?", "Your account": "আপনার অ্যাকাউন্ট", "Your basic MindCare profile information.": "আপনার মূল MindCare প্রোফাইলের তথ্য।", "MindCare member": "MindCare সদস্য", "Full Name": "পুরো নাম", "Phone Number": "ফোন নম্বর", "Preferred Language": "পছন্দের ভাষা", "Log Out": "লগ আউট", "Immediate assistance": "তাৎক্ষণিক সহায়তা", "Emergency services": "জরুরি পরিষেবা", "India's emergency response number.": "ভারতের জরুরি সহায়তা নম্বর।", "Contact Caregiver": "যত্নদাতার সঙ্গে যোগাযোগ করুন", "Your emergency contact": "আপনার জরুরি যোগাযোগ", "Primary Caregiver": "প্রধান যত্নদাতা", "Call Raj": "রাজকে কল করুন", "Write something about your day...": "আপনার দিন সম্পর্কে কিছু লিখুন...", "Write a message...": "একটি বার্তা লিখুন..."}, "as": {"A calmer day starts here": "এটা এখন এক শান্ত দিনৰ আৰম্ভণি", "Cognitive support, memory activities, family connection and everyday care — designed with simplicity in mind.": "জ্ঞানীয় সহায়তা, স্মৃতিৰ কাৰ্যকলাপ, পৰিয়ালৰ সৈতে সংযোগ আৰু দৈনন্দিন যত্ন — সৰলতাক মনত ৰাখি নিৰ্মাণ কৰা হৈছে।", "Create Profile": "প্ৰফাইল সৃষ্টি কৰক", "Log In": "লগ ইন কৰক", "Full name": "সম্পূৰ্ণ নাম", "Phone number": "ফোন নম্বৰ", "Preferred language": "পছন্দৰ ভাষা", "Create Profile & Continue": "প্ৰফাইল সৃষ্টি কৰি আগবাঢ়ক", "Use the same phone number you registered with.": "পঞ্জীয়নৰ সময়ত ব্যৱহাৰ কৰা একেটা ফোন নম্বৰ ব্যৱহাৰ কৰক।", "Dashboard": "ডেশ্বব'ৰ্ড", "Memory Games": "স্মৃতিৰ খেল", "Family Circle": "পৰিয়ালৰ বৃত্ত", "My Journal": "মোৰ ডায়েৰী", "Nearby Friends": "ওচৰৰ বন্ধু", "AI Companion": "AI সহায়ক", "My Profile": "মোৰ প্ৰফাইল", "Emergency Help": "জৰুৰীকালীন সহায়তা", "Good morning,": "সুপ্ৰভাত,", "Here is everything you need for a calm and healthy day.": "শান্ত আৰু সুস্থ দিন এটাৰ বাবে আপোনাৰ প্ৰয়োজনীয় সকলো ইয়াত আছে।", "Your care for today": "আজিৰ যত্ন", "Simple reminders to help you stay on track.": "আপোনাক দৈনন্দিন কামত নিয়মিত থাকিবলৈ সহায় কৰা সৰল সোঁৱৰাই দিয়া।", "Morning medication": "ৰাতিপুৱাৰ ঔষধ", "Take after breakfast": "জলপানৰ পিছত লওক", "Drink water": "পানী খাওক", "Have your morning glass": "ৰাতিপুৱা এগিলাচ পানী খাওক", "Memory activity": "স্মৃতিৰ কাৰ্যকলাপ", "Try a 10-minute brain exercise": "১০ মিনিটৰ মগজুৰ ব্যায়াম চেষ্টা কৰক", "Evening walk": "সন্ধিয়াৰ খোজ", "A gentle 15-minute walk": "১৫ মিনিটৰ লাহে লাহে খোজ কঢ়া", "Available now": "এতিয়া উপলব্ধ", "Contact Raj": "ৰাজৰ সৈতে যোগাযোগ কৰক", "Quick activities": "দ্ৰুত কাৰ্যকলাপ", "Memory Exercise": "স্মৃতিৰ ব্যায়াম", "Take a few minutes for a gentle cognitive activity.": "এটা সৰল জ্ঞানীয় কাৰ্যকলাপৰ বাবে কেইমিনিটমান সময় লওক।", "Start activity": "কাৰ্যকলাপ আৰম্ভ কৰক", "Hear instructions": "নিৰ্দেশনা শুনক", "Stay connected": "সংযোগত থাকক", "Stay connected with people who care about you.": "আপোনাৰ যত্ন লোৱা লোকসকলৰ সৈতে সংযোগত থাকক।", "Open Family Circle": "পৰিয়ালৰ বৃত্ত খোলক", "Cognitive activities": "জ্ঞানীয় কাৰ্যকলাপ", "Gentle games designed to keep the mind active and engaged.": "মন সক্ৰিয় আৰু জড়িত কৰি ৰাখিবলৈ নিৰ্মাণ কৰা সৰল খেল।", "Picture Pairs": "ছবিৰ জোৰা", "Find matching pairs and exercise your memory.": "মিল থকা জোৰা বিচাৰি স্মৃতিৰ অনুশীলন কৰক।", "Play Game": "খেলক", "Easy Sudoku": "সহজ ছুডোকু", "A simple number puzzle for logical thinking.": "যুক্তিসংগত চিন্তাৰ বাবে এটা সৰল সংখ্যাৰ সাঁথৰ।", "Block Lines": "ব্লক লাইন", "Place blocks and complete lines to make them disappear.": "ব্লক ৰাখি লাইন সম্পূৰ্ণ কৰক আৰু সেইবোৰ আঁতৰাওক।", "Remember the Sequence": "ক্ৰমটো মনত ৰাখক", "Watch the pattern and repeat it from memory.": "পেটাৰ্ণটো চাওক আৰু স্মৃতিৰ পৰা পুনৰাবৃত্তি কৰক।", "Word Match": "শব্দ মিল", "Match simple words with their related meaning.": "সৰল শব্দবোৰক সিহঁতৰ সম্পৰ্কিত অৰ্থৰ সৈতে মিলাওক।", "Music Memory": "সংগীত স্মৃতি", "Listen to familiar sounds and remember their order.": "চিনাকি শব্দ শুনক আৰু সেইবোৰৰ ক্ৰম মনত ৰাখক।", "Hear About It": "ইয়াৰ বিষয়ে শুনক", "Choose a game above": "ওপৰৰ পৰা এটা খেল বাছক", "Your selected activity will appear here.": "আপোনাৰ বাছনি কৰা কাৰ্যকলাপ ইয়াত দেখা যাব।", "Your family": "আপোনাৰ পৰিয়াল", "Message": "বাৰ্তা", "Family messages": "পৰিয়ালৰ বাৰ্তা", "Your memories": "আপোনাৰ স্মৃতিসমূহ", "Write about your day, memories, family or anything you want to remember.": "আপোনাৰ দিন, স্মৃতি, পৰিয়াল বা মনত ৰাখিব বিচৰা যিকোনো কথা লিখক।", "Today's note": "আজিৰ টোকা", "Save Note": "টোকা সংৰক্ষণ কৰক", "Hear My Note": "মোৰ টোকা শুনক", "Community": "সম্প্ৰদায়", "Connect with nearby people using the MindCare community.": "MindCare সম্প্ৰদায়ৰ জৰিয়তে ওচৰৰ লোকসকলৰ সৈতে সংযোগ কৰক।", "People nearby": "ওচৰৰ লোক", "Connect": "সংযোগ কৰক", "Find Nearby Devices": "ওচৰৰ ডিভাইচ বিচাৰক", "Open Group Chat": "গ্ৰুপ চেট খোলক", "Community chat": "সম্প্ৰদায়ৰ চেট", "Nearby Friends Group": "ওচৰৰ বন্ধুৰ গোট", "A friendly space for people using MindCare nearby.": "ওচৰত MindCare ব্যৱহাৰ কৰা লোকসকলৰ বাবে এটা বন্ধুত্বপূৰ্ণ ঠাই।", "Send": "পঠিয়াওক", "Friendly support": "বন্ধুত্বপূৰ্ণ সহায়তা", "A simple conversational companion for everyday support.": "দৈনন্দিন সহায়তাৰ বাবে এটা সৰল কথোপকথনৰ সংগী।", "Hello! I'm here with you. How are you feeling today?": "নমস্কাৰ! মই আপোনাৰ সৈতে আছোঁ। আজি আপুনি কেনে অনুভৱ কৰিছে?", "Your account": "আপোনাৰ একাউণ্ট", "Your basic MindCare profile information.": "আপোনাৰ মৌলিক MindCare প্ৰফাইলৰ তথ্য।", "MindCare member": "MindCare সদস্য", "Full Name": "সম্পূৰ্ণ নাম", "Phone Number": "ফোন নম্বৰ", "Preferred Language": "পছন্দৰ ভাষা", "Log Out": "লগ আউট", "Immediate assistance": "তাৎক্ষণিক সহায়তা", "Emergency services": "জৰুৰীকালীন সেৱা", "India's emergency response number.": "ভাৰতৰ জৰুৰীকালীন সহায়তা নম্বৰ।", "Contact Caregiver": "যত্ন লওঁতাৰ সৈতে যোগাযোগ কৰক", "Your emergency contact": "আপোনাৰ জৰুৰীকালীন যোগাযোগ", "Primary Caregiver": "মুখ্য যত্ন লওঁতা", "Call Raj": "ৰাজক ফোন কৰক", "Write something about your day...": "আপোনাৰ দিনটোৰ বিষয়ে কিবা লিখক...", "Write a message...": "এটা বাৰ্তা লিখক..."}, "mni": {"A calmer day starts here": "ꯅꯤꯡꯁꯤꯡꯅ ꯑꯃꯥ ꯁꯥꯟꯇꯤ ꯅꯤꯡꯊꯤꯅ ꯍꯧꯗꯣꯛꯄꯗꯒꯤ", "Create Profile": "ꯄ꯭ꯔꯣꯐꯥꯏꯜ ꯁꯦꯝꯒꯠꯄ", "Log In": "ꯂꯣꯒ ꯏꯟ", "Full name": "ꯃꯤꯡ ꯄꯨꯟꯅꯥ", "Phone number": "ꯐꯣꯟ ꯅꯝꯕꯔ", "Preferred language": "ꯑꯌꯥꯕ ꯂꯣꯟ", "Create Profile & Continue": "ꯄ꯭ꯔꯣꯐꯥꯏꯜ ꯁꯦꯝꯒꯠꯂꯨꯅ ꯃꯈꯥ ꯆꯠꯂꯨ", "Dashboard": "ꯗꯦꯁꯕꯣꯔꯗ", "Memory Games": "ꯃꯦꯃꯣꯔꯤ ꯒꯦꯝ", "Family Circle": "ꯐꯥꯃꯤꯂꯤ ꯁꯔꯀꯜ", "My Journal": "ꯑꯩꯒꯤ ꯖꯔꯅꯦꯜ", "Nearby Friends": "ꯅꯀꯟꯅꯥ ꯂꯩꯕ ꯆꯥꯅꯤꯡꯁꯤꯡ", "AI Companion": "AI ꯁꯍꯥꯌꯛ", "My Profile": "ꯑꯩꯒꯤ ꯄ꯭ꯔꯣꯐꯥꯏꯜ", "Emergency Help": "ꯑꯄꯥꯡꯕ ꯃꯇꯦꯡ", "Good morning,": "ꯅꯨꯃꯤꯠ ꯐꯖꯅ ꯍꯧꯗꯣꯛꯎ,", "Your care for today": "ꯉꯥꯁꯤꯒꯤ ꯉꯥꯛ ꯁꯦꯝꯒꯠꯄ", "Morning medication": "ꯅꯨꯃꯤꯠꯇꯥ ꯑꯣꯁꯤꯇꯤ", "Drink water": "ꯏꯁꯤꯡ ꯆꯥꯎ", "Memory activity": "ꯃꯦꯃꯣꯔꯤ ꯑꯦꯛꯇꯤꯕꯤꯇꯤ", "Evening walk": "ꯅꯨꯃꯤꯗꯥꯡꯒꯤ ꯆꯠꯄ", "Quick activities": "ꯊꯥꯖꯤꯡ ꯑꯦꯛꯇꯤꯕꯤꯇꯤ", "Memory Exercise": "ꯃꯦꯃꯣꯔꯤ ꯑꯦꯛꯁꯔꯁꯥꯏꯖ", "Start activity": "ꯑꯦꯛꯇꯤꯕꯤꯇꯤ ꯍꯧꯗꯣꯛꯎ", "Stay connected": "ꯁꯤꯡꯅ ꯁꯝꯕꯟꯗ ꯂꯩꯎ", "Cognitive activities": "ꯁꯤꯟꯇꯥꯏ ꯑꯦꯛꯇꯤꯕꯤꯇꯤ", "Picture Pairs": "ꯄꯤꯛꯆꯔ ꯄꯦꯌꯔ", "Easy Sudoku": "ꯏꯖꯤ ꯁꯨꯗꯣꯀꯨ", "Block Lines": "ꯕ꯭ꯂꯣꯛ ꯂꯥꯏꯟ", "Remember the Sequence": "ꯁꯤꯀ꯭ꯋꯦꯟꯁ ꯅꯤꯡꯁꯤꯡꯎ", "Word Match": "ꯋꯥꯍꯩ ꯃꯦꯆ", "Music Memory": "ꯃ꯭ꯌꯨꯖꯤꯛ ꯃꯦꯃꯣꯔꯤ", "Play Game": "ꯒꯦꯝ ꯁꯤꯡꯖꯤꯟꯎ", "Community": "ꯀꯝꯌꯨꯅꯤꯇꯤ", "Connect": "ꯁꯝꯕꯟꯗ ꯂꯩꯎ", "Send": "ꯊꯥꯒꯠꯂꯨ", "Your account": "ꯅꯥꯒꯤ ꯑꯦꯀꯥꯎꯟꯇ", "Full Name": "ꯃꯤꯡ ꯄꯨꯟꯅꯥ", "Phone Number": "ꯐꯣꯟ ꯅꯝꯕꯔ", "Preferred Language": "ꯑꯌꯥꯕ ꯂꯣꯟ", "Log Out": "ꯂꯣꯒ ꯑꯥꯎꯠ", "Immediate assistance": "ꯊꯥꯗꯣꯛꯄ ꯃꯇꯦꯡ", "Emergency services": "ꯑꯄꯥꯡꯕ ꯁꯔꯕꯤꯁ", "Contact Caregiver": "ꯀꯦꯌꯔꯒꯤꯕꯔꯁꯤꯒꯤ ꯃꯇꯦꯡ ꯂꯧ", "Call Raj": "ꯔꯥꯖꯒꯤ ꯃꯇꯦꯡ ꯂꯧ"}};
+
+  function mcLang(){
+    let p={}; try{p=JSON.parse(localStorage.getItem('mindcareProfile')||'{}')||{}}catch(e){}
+    return MC_LANGS[p.language] || 'en';
+  }
+  function mcNorm(s){ return String(s||'').replace(/\s+/g,' ').trim(); }
+
+  function mcTranslateTextNode(node, lang){
+    if(!node || !node.parentElement) return;
+    const parent=node.parentElement;
+    if(['SCRIPT','STYLE','NOSCRIPT'].includes(parent.tagName)) return;
+    if(!node.nodeValue || !node.nodeValue.trim()) return;
+    if(!node.dataset.mcOriginal) node.dataset.mcOriginal=node.nodeValue;
+    const original=mcNorm(node.dataset.mcOriginal);
+    if(!original) return;
+    const translated=(MC_T[lang] && MC_T[lang][original]) || original;
+    if(lang==='en') node.nodeValue=node.dataset.mcOriginal;
+    else {
+      const raw=node.dataset.mcOriginal;
+      const leading=(raw.match(/^\s*/)||[''])[0], trailing=(raw.match(/\s*$/)||[''])[0];
+      node.nodeValue=leading+translated+trailing;
+    }
+  }
+
+  function mcTranslateAttrs(root, lang){
+    const els=(root.querySelectorAll ? root.querySelectorAll('input,textarea,button,[aria-label],[title]') : []);
+    els.forEach(el=>{
+      ['placeholder','aria-label','title'].forEach(attr=>{
+        if(!el.hasAttribute(attr)) return;
+        const key='mcOriginal_'+attr;
+        if(!el.dataset[key]) el.dataset[key]=el.getAttribute(attr);
+        const original=mcNorm(el.dataset[key]);
+        const translated=(MC_T[lang] && MC_T[lang][original]) || original;
+        el.setAttribute(attr, translated);
+      });
+    });
+  }
+
+  function mcTranslate(root=document.body){
+    const lang=mcLang();
+    const walker=document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes=[];
+    while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(n=>mcTranslateTextNode(n,lang));
+    mcTranslateAttrs(root,lang);
+    document.documentElement.lang=lang==='en'?'en':lang;
+  }
+
+  window.applyMindCareLanguage=function(){
+    mcTranslate(document.body);
+    if(typeof loadProfile==='function') loadProfile();
+  };
+
+  // Patch speech to use the selected language.
+  if(window.speak){
+    const originalSpeak=window.speak;
+    window.speak=function(text){
+      const lang=mcLang();
+      const uText=String(text||'').trim();
+      if(!uText){ return originalSpeak(text); }
+      if(!('speechSynthesis' in window)) return originalSpeak(text);
+      speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(uText);
+      u.rate=.88; u.volume=1;
+      u.lang={en:'en-IN',hi:'hi-IN',as:'as-IN',bn:'bn-IN',mni:'mni-IN'}[lang]||'en-IN';
+      speechSynthesis.speak(u);
+    };
+  }
+
+  // Patch microphone recognition language when supported.
+  if(window.startMic){
+    const originalMic=window.startMic;
+    window.startMic=function(inputId){
+      const lang=mcLang();
+      try{
+        let p={}; try{p=JSON.parse(localStorage.getItem('mindcareProfile')||'{}')||{}}catch(e){}
+        const input=document.getElementById(inputId);
+        const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+        if(R){
+          const r=new R();
+          r.lang={en:'en-IN',hi:'hi-IN',as:'as-IN',bn:'bn-IN',mni:'mni-IN'}[lang]||'en-IN';
+          r.interimResults=false; r.maxAlternatives=1;
+          r.onresult=e=>{if(input) input.value=e.results[0][0].transcript};
+          r.onerror=()=>{};
+          r.start();
+          return;
+        }
+      }catch(e){}
+      originalMic(inputId);
+    };
+  }
+
+  // Add a language selector to My Profile so the language can be changed later.
+  function addProfileLanguageControl(){
+    const page=document.getElementById('profile');
+    if(!page || document.getElementById('mcLanguageSelect')) return;
+    const card=page.querySelector('.card');
+    if(!card) return;
+    const row=document.createElement('div');
+    row.className='info-row';
+    row.innerHTML='<strong data-mc-static="Preferred Language">Preferred Language</strong><select id="mcLanguageSelect" class="mc-select" aria-label="Preferred language"><option>English</option><option>Hindi</option><option>Assamese</option><option>Bengali</option><option>Manipuri</option></select>';
+    card.insertBefore(row, card.querySelector('button'));
+    const sel=row.querySelector('select');
+    let current={}; try{current=JSON.parse(localStorage.getItem('mindcareProfile')||'{}')||{}}catch(e){}; sel.value=current.language||'English';
+    sel.addEventListener('change',()=>{
+      let p={}; try{p=JSON.parse(localStorage.getItem('mindcareProfile')||'{}')||{}}catch(e){}
+      if(!p.phone) return;
+      p.language=sel.value;
+      let users={}; try{users=JSON.parse(localStorage.getItem('mindcareUsers')||'{}')||{}}catch(e){}
+      if(users[p.phone]) users[p.phone]=p;
+      localStorage.setItem('mindcareUsers',JSON.stringify(users));
+      localStorage.setItem('mindcareProfile',JSON.stringify(p));
+      applyMindCareLanguage();
+      const t=document.createElement('div'); t.className='mc-toast show'; t.textContent=sel.value==='English'?'Language changed':'Language changed to '+sel.value; document.body.appendChild(t); setTimeout(()=>t.remove(),2200);
+    });
+  }
+
+  // Re-apply language whenever a new modal/game is created.
+  const observer=new MutationObserver(muts=>{
+    let changed=false;
+    muts.forEach(m=>{ if(m.addedNodes && m.addedNodes.length) changed=true; });
+    if(changed) mcTranslate(document.body);
+  });
+  observer.observe(document.body,{childList:true,subtree:true});
+
+  function initMC(){
+    addProfileLanguageControl();
+    mcTranslate(document.body);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initMC);
+  else initMC();
+
+  // Re-run after app navigation and after the existing profile loader.
+  const oldOpenPage=window.openPage;
+  if(oldOpenPage) window.openPage=function(pageId,button){
+    const r=oldOpenPage(pageId,button);
+    addProfileLanguageControl();
+    setTimeout(()=>mcTranslate(document.body),0);
+    return r;
+  };
+
+  const oldCreate=window.createProfile;
+  if(oldCreate) window.createProfile=function(event){
+    const result=oldCreate(event);
+    setTimeout(()=>{ addProfileLanguageControl(); mcTranslate(document.body); },30);
+    return result;
+  };
+})();
+
 </script>
 
 
