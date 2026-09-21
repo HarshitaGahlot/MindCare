@@ -2431,9 +2431,14 @@ body{
   });
 
 
+  let MC_CURRENT_LANG=null;
   function mcLang(){
+    if(MC_CURRENT_LANG) return MC_CURRENT_LANG;
     let p={}; try{p=JSON.parse(localStorage.getItem('mindcareProfile')||'{}')||{}}catch(e){}
-    return MC_LANGS[p.language] || 'en';
+    const raw=String(p.language||'English').trim();
+    const codes={English:'en',Hindi:'hi',Assamese:'as',Bengali:'bn',Manipuri:'mni',en:'en',hi:'hi',as:'as',bn:'bn',mni:'mni'};
+    MC_CURRENT_LANG=codes[raw] || codes[raw.toLowerCase()] || 'en';
+    return MC_CURRENT_LANG;
   }
 
   // Keep the dashboard date correct and localized for India.
@@ -2575,6 +2580,7 @@ body{
       let p={}; try{p=JSON.parse(localStorage.getItem('mindcareProfile')||'{}')||{}}catch(e){}
       if(!p.phone){ return; }
       p.language=language;
+      MC_CURRENT_LANG=MC_LANGS[language] || 'en';
       let users={}; try{users=JSON.parse(localStorage.getItem('mindcareUsers')||'{}')||{}}catch(e){}
       if(users[p.phone]) users[p.phone]={...users[p.phone],...p};
       localStorage.setItem('mindcareUsers',JSON.stringify(users));
@@ -2582,6 +2588,7 @@ body{
       // Apply immediately so the whole interface changes without a reload.
       mcTranslate(document.body);
       updateDashboardDate();
+      document.documentElement.lang=MC_CURRENT_LANG;
       const t=document.createElement('div');
       t.className='mc-toast show';
       t.textContent=language==='English'?'Language changed':'Language changed to '+language;
@@ -2599,8 +2606,11 @@ body{
   observer.observe(document.body,{childList:true,subtree:true});
 
   function initMC(){
+    MC_CURRENT_LANG=null;
+    mcLang();
     addProfileLanguageControl();
     mcTranslate(document.body);
+    updateDashboardDate();
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initMC);
   else initMC();
@@ -2610,14 +2620,20 @@ body{
   if(oldOpenPage) window.openPage=function(pageId,button){
     const r=oldOpenPage(pageId,button);
     addProfileLanguageControl();
-    setTimeout(()=>mcTranslate(document.body),50);
+    setTimeout(()=>{mcTranslate(document.body);updateDashboardDate();},50);
     return r;
   };
 
   const oldCreate=window.createProfile;
   if(oldCreate) window.createProfile=function(event){
     const result=oldCreate(event);
-    setTimeout(()=>{ addProfileLanguageControl(); mcTranslate(document.body); },30);
+    setTimeout(()=>{
+      MC_CURRENT_LANG=null;
+      mcLang();
+      addProfileLanguageControl();
+      mcTranslate(document.body);
+      updateDashboardDate();
+    },30);
     return result;
   };
 })();
