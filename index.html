@@ -2563,38 +2563,67 @@ body{
     };
   }
 
-  // Add a language selector to My Profile so the language can be changed later.
-  function addProfileLanguageControl(){
-    const page=document.getElementById('profile');
-    if(!page || document.getElementById('mcLanguageSelect')) return;
-    const card=page.querySelector('.card');
-    if(!card) return;
-    const row=document.createElement('div');
-    row.className='info-row';
-    row.innerHTML='<strong data-mc-static="Preferred Language">Preferred Language</strong><select id="mcLanguageSelect" class="mc-select" aria-label="Preferred language"><option>English</option><option>Hindi</option><option>Assamese</option><option>Bengali</option><option>Manipuri</option></select>';
-    card.insertBefore(row, card.querySelector('button'));
-    const sel=row.querySelector('select');
-    let current={}; try{current=JSON.parse(localStorage.getItem('mindcareProfile')||'{}')||{}}catch(e){}; sel.value=current.language||'English';
-    sel.addEventListener('change',()=>{
-      const language=sel.value;
-      let p={}; try{p=JSON.parse(localStorage.getItem('mindcareProfile')||'{}')||{}}catch(e){}
-      if(!p.phone){ return; }
-      p.language=language;
-      MC_CURRENT_LANG=MC_LANGS[language] || 'en';
-      let users={}; try{users=JSON.parse(localStorage.getItem('mindcareUsers')||'{}')||{}}catch(e){}
-      if(users[p.phone]) users[p.phone]={...users[p.phone],...p};
-      localStorage.setItem('mindcareUsers',JSON.stringify(users));
-      localStorage.setItem('mindcareProfile',JSON.stringify(p));
-      // Apply immediately so the whole interface changes without a reload.
+  // Language controls: #profileLanguage is the signup selector and
+  // #mcLanguageSelect is the selector shown on My Profile.
+  function bindLanguageSelector(sel){
+    if(!sel) return;
+    if(sel.dataset.mcLanguageBound==='1'){
+      let p={};
+      try{p=JSON.parse(localStorage.getItem('mindcareProfile')||'{}')||{}}catch(e){}
+      if(p.language && Array.from(sel.options).some(o=>o.value===p.language || o.textContent===p.language)) sel.value=p.language;
+      return;
+    }
+    sel.dataset.mcLanguageBound='1';
+
+    let p={};
+    try{p=JSON.parse(localStorage.getItem('mindcareProfile')||'{}')||{}}catch(e){}
+    if(p.language && Array.from(sel.options).some(o=>o.value===p.language || o.textContent===p.language)) sel.value=p.language;
+
+    sel.addEventListener('change',function(){
+      const language=this.value;
+      const code=MC_LANGS[language] || 'en';
+      let profileData={};
+      try{profileData=JSON.parse(localStorage.getItem('mindcareProfile')||'{}')||{}}catch(e){}
+      profileData.language=language;
+
+      localStorage.setItem('mindcareProfile',JSON.stringify(profileData));
+      let users={};
+      try{users=JSON.parse(localStorage.getItem('mindcareUsers')||'{}')||{}}catch(e){}
+      if(profileData.phone){
+        users[profileData.phone]={...(users[profileData.phone]||{}),...profileData};
+        localStorage.setItem('mindcareUsers',JSON.stringify(users));
+      }
+
+      // Do not let mcLang() keep the previous language cached.
+      MC_CURRENT_LANG=code;
       mcTranslate(document.body);
       updateDashboardDate();
-      document.documentElement.lang=MC_CURRENT_LANG;
-      const t=document.createElement('div');
-      t.className='mc-toast show';
-      t.textContent=language==='English'?'Language changed':'Language changed to '+language;
-      document.body.appendChild(t);
-      setTimeout(()=>t.remove(),2200);
+      const display=document.getElementById('displayLanguage');
+      if(display) display.textContent=language;
+      document.documentElement.lang=code;
     });
+  }
+
+  function addProfileLanguageControl(){
+    // Signup/create-profile language selector.
+    bindLanguageSelector(document.getElementById('profileLanguage'));
+
+    // Profile-page language selector. Create it once if it does not exist.
+    const page=document.getElementById('profile');
+    if(!page) return;
+    const card=page.querySelector('.card');
+    if(!card) return;
+
+    let sel=document.getElementById('mcLanguageSelect');
+    if(!sel){
+      const row=document.createElement('div');
+      row.className='info-row mc-language-row';
+      row.innerHTML='<strong data-mc-static="Preferred Language">Preferred Language</strong><select id="mcLanguageSelect" class="mc-select" aria-label="Preferred language"><option value="English">English</option><option value="Hindi">Hindi</option><option value="Assamese">Assamese</option><option value="Bengali">Bengali</option><option value="Manipuri">Manipuri</option></select>';
+      const button=card.querySelector('button');
+      if(button) card.insertBefore(row,button); else card.appendChild(row);
+      sel=row.querySelector('#mcLanguageSelect');
+    }
+    bindLanguageSelector(sel);
   }
 
   // Re-apply language whenever a new modal/game is created.
