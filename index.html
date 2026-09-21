@@ -1065,8 +1065,8 @@ body{
 
     <div class="hero">
 
-        <div class="eyebrow">
-            Saturday, September 12
+        <div class="eyebrow" id="dashboardDate">
+            Monday, September 21
         </div>
 
         <h1 class="page-title">
@@ -2435,6 +2435,23 @@ body{
     let p={}; try{p=JSON.parse(localStorage.getItem('mindcareProfile')||'{}')||{}}catch(e){}
     return MC_LANGS[p.language] || 'en';
   }
+
+  // Keep the dashboard date correct and localized for India.
+  function updateDashboardDate(){
+    const el=document.getElementById('dashboardDate');
+    if(!el) return;
+    const lang=mcLang();
+    const locale={en:'en-IN',hi:'hi-IN',as:'as-IN',bn:'bn-IN',mni:'mni-IN'}[lang]||'en-IN';
+    try{
+      el.textContent=new Intl.DateTimeFormat(locale,{
+        timeZone:'Asia/Kolkata', weekday:'long', month:'long', day:'numeric'
+      }).format(new Date());
+    }catch(e){
+      el.textContent=new Intl.DateTimeFormat('en-IN',{
+        timeZone:'Asia/Kolkata', weekday:'long', month:'long', day:'numeric'
+      }).format(new Date());
+    }
+  }
   function mcNorm(s){ return String(s||'').replace(/\s+/g,' ').trim(); }
 
   function mcTranslateTextNode(node, lang){
@@ -2490,6 +2507,7 @@ body{
     nodes.forEach(n=>mcTranslateTextNode(n,lang));
     mcTranslateAttrs(root,lang);
     document.documentElement.lang=lang==='en'?'en':lang;
+    updateDashboardDate();
   }
 
   window.applyMindCareLanguage=function(){
@@ -2553,15 +2571,22 @@ body{
     const sel=row.querySelector('select');
     let current={}; try{current=JSON.parse(localStorage.getItem('mindcareProfile')||'{}')||{}}catch(e){}; sel.value=current.language||'English';
     sel.addEventListener('change',()=>{
+      const language=sel.value;
       let p={}; try{p=JSON.parse(localStorage.getItem('mindcareProfile')||'{}')||{}}catch(e){}
-      if(!p.phone) return;
-      p.language=sel.value;
+      if(!p.phone){ return; }
+      p.language=language;
       let users={}; try{users=JSON.parse(localStorage.getItem('mindcareUsers')||'{}')||{}}catch(e){}
-      if(users[p.phone]) users[p.phone]=p;
+      if(users[p.phone]) users[p.phone]={...users[p.phone],...p};
       localStorage.setItem('mindcareUsers',JSON.stringify(users));
       localStorage.setItem('mindcareProfile',JSON.stringify(p));
-      applyMindCareLanguage();
-      const t=document.createElement('div'); t.className='mc-toast show'; t.textContent=sel.value==='English'?'Language changed':'Language changed to '+sel.value; document.body.appendChild(t); setTimeout(()=>t.remove(),2200);
+      // Apply immediately so the whole interface changes without a reload.
+      mcTranslate(document.body);
+      updateDashboardDate();
+      const t=document.createElement('div');
+      t.className='mc-toast show';
+      t.textContent=language==='English'?'Language changed':'Language changed to '+language;
+      document.body.appendChild(t);
+      setTimeout(()=>t.remove(),2200);
     });
   }
 
