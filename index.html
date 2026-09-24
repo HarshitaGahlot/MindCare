@@ -2307,7 +2307,7 @@ body{
     if(!p){toast('No account found. Please create a profile first.');return false}
     localStorage.setItem('mindcareProfile',JSON.stringify(p));showApp();toast('Welcome back, '+p.name);return false;
   };
-  function showApp(){document.getElementById('loginPage').style.display='none';document.getElementById('app').style.display='block';loadProfile();loadJournal();updateProgress();updateDashboard()}
+  function showApp(){document.getElementById('loginPage').style.display='none';document.getElementById('app').style.display='block';loadProfile();loadJournal();updateProgress();updateDashboard();if(typeof window.applyMindCareLanguage==='function')window.applyMindCareLanguage()}
   window.logout=function(){localStorage.removeItem('mindcareProfile');document.getElementById('app').style.display='none';document.getElementById('loginPage').style.display='flex';showLogin();toast('Logged out')};
 
   /* ---------- profile ---------- */
@@ -2325,7 +2325,7 @@ body{
   window.stopReading=function(){if('speechSynthesis' in window)speechSynthesis.cancel()};
   window.readPage=function(){const active=document.querySelector('.page.active');if(active)speak(active.innerText)};
   window.startMic=function(inputId){const input=document.getElementById(inputId);if(!input){toast('Input not found');return}const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('Voice input is not supported in this browser');return}if(recognition){try{recognition.stop()}catch(e){}}
-    recognition=new SR();recognition.lang=(profile().language==='Hindi'?'hi-IN':'en-IN');recognition.interimResults=false;recognition.maxAlternatives=1;recognition.onresult=e=>{input.value=(input.value+' '+e.results[0][0].transcript).trim();input.dispatchEvent(new Event('input',{bubbles:true}));toast('Voice added')};recognition.onerror=()=>toast('Microphone input could not be started');recognition.onend=()=>{recognition=null};recognition.start();toast('Listening…')
+    recognition=new SR();const speechLang={English:'en-IN',Hindi:'hi-IN',Assamese:'as-IN',Bengali:'bn-IN',Manipuri:'mni-IN'};recognition.lang=speechLang[profile().language]||'en-IN';recognition.interimResults=false;recognition.maxAlternatives=1;recognition.onresult=e=>{input.value=(input.value+' '+e.results[0][0].transcript).trim();input.dispatchEvent(new Event('input',{bubbles:true}));toast('Voice added')};recognition.onerror=()=>toast('Microphone input could not be started');recognition.onend=()=>{recognition=null};recognition.start();toast('Listening…')
   };
   function addMic(input){if(!input||input.dataset.mcMic)return; if(!['text','tel','search'].includes(input.type)&&input.tagName!=='TEXTAREA')return; input.dataset.mcMic='1';const wrap=document.createElement('div');wrap.className='mc-input-wrap';input.parentNode.insertBefore(wrap,input);wrap.appendChild(input);const b=document.createElement('button');b.type='button';b.className='mc-inline-mic';b.textContent='🎙️';b.title='Speak';b.onclick=()=>startMic(input.id);if(!input.id)input.id='mcInput'+Math.random().toString(36).slice(2);wrap.appendChild(b)}
   function addMics(){['profileName','profilePhone','loginPhone','journalText','nearbyInput','aiInput'].forEach(id=>addMic(document.getElementById(id)))}
@@ -2558,14 +2558,27 @@ body{
     const language=String(sel.value || 'English');
     mcSaveLanguage(language);
     MC_CURRENT_LANG=MC_LANG_CODE[language] || 'en';
-    // Reload so every page is built from the selected language.
-    window.location.reload();
+    // Apply the selected language immediately — no page reload needed.
+    // This keeps the current app state and works for both login and profile selectors.
+    if(typeof window.applyMindCareLanguage==='function'){
+      window.applyMindCareLanguage();
+    }else{
+      mcTranslate(document.body);
+    }
+    const profileNow=mcReadProfile();
+    if(profileNow.language){
+      const display=document.getElementById('displayLanguage');
+      if(display) display.textContent=profileNow.language;
+    }
   }, true);
 
   window.applyMindCareLanguage=function(){
     MC_CURRENT_LANG=mcGetLang();
     addProfileLanguageControl();
     mcTranslate(document.body);
+    // Keep profile data/UI synchronized after a language change.
+    if(typeof window.loadProfile==='function') window.loadProfile();
+    updateDashboardDate();
   };
 
   // Replace speech language according to the selected UI language.
@@ -2593,11 +2606,15 @@ body{
   else initMC();
 
   // Re-translate newly-created UI, but never change the selected language.
+  let mcTranslateTimer=null;
   const mcObserver=new MutationObserver(function(muts){
     if(muts.some(m=>m.addedNodes && m.addedNodes.length)){
-      MC_CURRENT_LANG=mcGetLang();
-      addProfileLanguageControl();
-      mcTranslate(document.body);
+      clearTimeout(mcTranslateTimer);
+      mcTranslateTimer=setTimeout(function(){
+        MC_CURRENT_LANG=mcGetLang();
+        addProfileLanguageControl();
+        mcTranslate(document.body);
+      },0);
     }
   });
   mcObserver.observe(document.body,{childList:true,subtree:true});
